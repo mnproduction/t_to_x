@@ -1,7 +1,8 @@
 import logging
-from settings.config import DEBUG_STATE_CONSOLE, DEBUG_STATE_FILE
+from settings.config import Config
 
-class ColorFormatter(logging.Formatter):
+
+class Logger:
     COLORS = {
         'DEBUG':    '\x1b[1;38;5;031m',     # blue color for DEBUG
         'INFO':     '\x1b[1;38;5;082m',     # green color for INFO
@@ -11,72 +12,51 @@ class ColorFormatter(logging.Formatter):
         'RESET':    '\x1b[0m',              # reset colors
     }
 
+    def __init__(self, name, log_to_console=Config.DEBUG_STATE_CONSOLE, log_to_file=Config.DEBUG_STATE_FILE, file_name='logging.log'):
+        self.logger = logging.getLogger(name)
+        self.logger.setLevel(logging.DEBUG)
+        self.logger.propagate = False  # Disable sending messages to parent loggers
 
-    def format(self, record):
-        record_color = self.COLORS.get(record.levelname, '')
-        record_reset = self.COLORS.get('RESET', '')
+        if not self.logger.handlers:  # Add handlers only if they don't exist yet
+            if log_to_console:
+                console_handler = logging.StreamHandler()
+                formatter = self.ColorFormatter('%(asctime)s - %(name)s - %(levelname)s - %(message)s')
+                console_handler.setFormatter(formatter)
+                self.logger.addHandler(console_handler)
 
-        levelname = record.levelname
-        colored_levelname = f"{record_color}{levelname}{record_reset}"
+            if log_to_file:
+                file_handler = logging.FileHandler(file_name, encoding='utf-8')
+                file_formatter = logging.Formatter('%(asctime)s - %(name)s - %(levelname)s - %(message)s')
+                file_handler.setFormatter(file_formatter)
+                self.logger.addHandler(file_handler)
 
-        record.levelname = colored_levelname
+    class ColorFormatter(logging.Formatter):
+        def format(self, record):
+            record_color = Logger.COLORS.get(record.levelname, '')
+            record_reset = Logger.COLORS.get('RESET', '')
 
-        message = super().format(record)
+            levelname = record.levelname
+            colored_levelname = f"{record_color}{levelname}{record_reset}"
 
-        record.levelname = levelname
+            record.levelname = colored_levelname
 
-        return message.encode('utf-8').decode('ascii', 'ignore')
+            message = super().format(record)
 
-    def testcase():
-        # Creating logger object
-        logger = logging.getLogger(__name__)
+            record.levelname = levelname
 
-        # Creating handler for output to console
-        console_handler = logging.StreamHandler()
+            return message.encode('utf-8').decode('ascii', 'ignore')
 
-        # Creating formatter with color format
-        formatter = ColorFormatter('%(asctime)s - %(name)s - %(levelname)s - %(message)s')
+    def debug(self, message):
+        self.logger.debug(message)
 
-        # Attaching handler to logger
-        logger.addHandler(console_handler)
+    def info(self, message):
+        self.logger.info(message)
 
-        # Setting logging level
-        logger.setLevel(logging.DEBUG)
+    def warning(self, message):
+        self.logger.warning(message)
 
-        # Setting formatter for handler
-        console_handler.setFormatter(formatter)
+    def error(self, message):
+        self.logger.error(message)
 
-        # Writing log messages
-        logger.debug('Debug message')
-        logger.info('Info message')
-        logger.warning('Warning message')
-        logger.error('Error message')
-        logger.critical('Critical message')
-        
-def setup_logger(name, log_to_console=DEBUG_STATE_CONSOLE, log_to_file=DEBUG_STATE_FILE, file_name='logging.log'):
-    '''
-    Function to set up logger
-    :param log_to_console: logging to console
-    :param log_to_file: logging to file
-    :param file_name: file name for log
-    :return: logger object
-    '''
-    
-    logger = logging.getLogger(name)
-    logger.setLevel(logging.DEBUG)
-    logger.propagate = False  # Disable sending messages to parent loggers
-
-    if not logger.handlers:  # Add handlers only if they don't exist yet
-        if log_to_console:
-            console_handler = logging.StreamHandler()
-            formatter = ColorFormatter('%(asctime)s - %(name)s - %(levelname)s - %(message)s')
-            console_handler.setFormatter(formatter)
-            logger.addHandler(console_handler)
-
-        if log_to_file:
-            file_handler = logging.FileHandler(file_name, encoding='utf-8')
-            file_formatter = logging.Formatter('%(asctime)s - %(name)s - %(levelname)s - %(message)s')
-            file_handler.setFormatter(file_formatter)
-            logger.addHandler(file_handler)
-
-    return logger
+    def critical(self, message):
+        self.logger.critical(message)
