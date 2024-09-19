@@ -3,8 +3,14 @@ __pycache__/
 *.py[cod]
 *$py.class
 
+# pyrogram session
+*.session*
+
 # C extensions
 *.so
+
+# Media files
+media/
 
 # Distribution / packaging
 build/
@@ -62,6 +68,9 @@ ipython_config.py
 
 # VSCode
 .vscode/
+
+# Visual Studio 2022
+.vs/
 
 # Environments
 .env
