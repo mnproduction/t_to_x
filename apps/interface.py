@@ -1,16 +1,13 @@
 from abc import ABC, abstractmethod
 
 class AbstractMessageReceiver(ABC):
-    @abstractmethod
-    def connect(self):
-        pass
 
     @abstractmethod
-    def disconnect(self):
+    def run(self):
         pass
-
+    
     @abstractmethod
-    def get_messages(self):
+    def add_handler(self, handler):
         pass
 
 class AbstractContentPublisher(ABC):

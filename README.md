@@ -39,3 +39,5 @@ DONE:
 - Updated x/client.py 
 - Updated README.md
 - Created app-telegram.py to test API functionality
+- Updated telegram client to use it in project
+- Minor bugfixes
