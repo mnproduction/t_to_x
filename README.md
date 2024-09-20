@@ -41,3 +41,4 @@ DONE:
 - Created app-telegram.py to test API functionality
 - Updated telegram client to use it in project
 - Minor bugfixes
+- Pipeline telegram to x finished

@@ -1,8 +1,7 @@
 # apps/t/client.py
 from apps.interface import AbstractMessageReceiver
-from pyrogram import Client, filters
+from pyrogram import Client
 from pyrogram.types import Message
-from pyrogram.handlers import MessageHandler
 from settings.config import Config
 from pathlib import Path
 from utils.logger import Logger
@@ -53,5 +52,6 @@ class TelegramClient(AbstractMessageReceiver):
             logger.error(f"Error downloading image: {e}")
             raise e
         
+
 
 
