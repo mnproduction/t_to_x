@@ -25,12 +25,12 @@ during first run pyrogram will create a new session
 
 
 # TODO:
-1. ~~Work with multiple pictures in one post~~
-2. ~~Change captions~~
-3. Handle videos
-4. Handle GIFs
+1. Fix groups to split posts % 4 == 0
+2. Handle videos
+3. Handle GIFs
 
-5. Refactor the code make it clean and consistent
+4. Refactor the code make it clean and consistent
+
 - Documentation
 - THIS
 - Tests
@@ -53,3 +53,5 @@ during first run pyrogram will create a new session
 - Minor bugfixes
 - Pipeline telegram to x finished
 - Now captions are cleaned from links and posted to X
+- Work with multiple pictures in one post
+- Change captions
