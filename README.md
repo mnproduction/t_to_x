@@ -24,7 +24,12 @@ fill in .env file
 during first run pyrogram will create a new session
 
 
-# TODO: 
+# TODO:
+1. Work with multiple pictures in one post
+2. Change captions
+3. Handle videos
+4. Handle GIFs
+
 - Documentation
 - THIS
 - Tests
