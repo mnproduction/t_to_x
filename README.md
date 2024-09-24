@@ -25,11 +25,10 @@ during first run pyrogram will create a new session
 
 
 # TODO:
-1. Fix groups to split posts % 4 == 0
-2. Handle videos
-3. Handle GIFs
+1. Handle videos
+2. Handle GIFs
 
-4. Refactor the code make it clean and consistent
+3. Refactor the code make it clean and consistent
 
 - Documentation
 - THIS
@@ -55,3 +54,4 @@ during first run pyrogram will create a new session
 - Now captions are cleaned from links and posted to X
 - Work with multiple pictures in one post
 - Change captions
+- Images is now grouped by 4
