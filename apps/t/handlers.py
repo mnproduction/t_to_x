@@ -79,7 +79,7 @@ def create_photo_message_handler(telegram_client: TelegramClient, x_client: XCli
 
                 # Post image to Twitter
                 media_id = x_client.media_upload_from_file(file_stream)
-                x_client.publish_content(content=caption, media_id=media_id)
+                x_client.publish_content(content=caption, media_ids=[media_id])
                 logger.info("Image has been posted to Twitter")
                 file_stream.close()
             else:
