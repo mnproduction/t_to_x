@@ -67,6 +67,7 @@ class XClient(AbstractContentPublisher):
     def publish_content(self, content, media_ids=None):
         """Publishes tweet with specified content and media."""
         try:
+            media_ids = media_ids[:4]
             self.client.create_tweet(media_ids=media_ids, text=content)
             logger.info(f"Published tweet: {content}")
         except Exception as e:
