@@ -1,5 +1,6 @@
 # apps/x/client.py
 from io import BytesIO
+from typing import List
 from apps.interface import AbstractContentPublisher
 from tweepy import Client, API, OAuthHandler
 from settings.config import Config
@@ -10,6 +11,7 @@ logger = Logger(name='x-client')
 
 class XClient(AbstractContentPublisher):
     def __init__(self, config: Config):
+        # auth v2
         self.client = Client(
             bearer_token=config.X_BEARER_TOKEN,
             consumer_key=config.X_API_KEY,
@@ -18,6 +20,7 @@ class XClient(AbstractContentPublisher):
             access_token_secret=config.X_ACCESS_TOKEN_SECRET,
         )
         
+        # auth v1.1
         self.api = API(OAuthHandler(
             consumer_key=config.X_API_KEY,
             consumer_secret=config.X_API_SECRET,
@@ -46,11 +49,25 @@ class XClient(AbstractContentPublisher):
         except Exception as e:
             logger.error(f"Error uploading media to Twitter: {e}")
             raise e
+
+    def media_upload_from_files(self, file_streams: List[BytesIO]):
+        try:
+            media_ids = []
+            for file_stream in file_streams:
+                file_stream.seek(0)
+                media = self.api.media_upload(filename='image.jpg', file=file_stream)
+                media_id = media.media_id_string
+                media_ids.append(media_id)
+                logger.debug(f"Uploaded media: {media_id}")
+            return media_ids
+        except Exception as e:
+            logger.error(f"Error uploading media to X: {e}")
+            raise e
         
-    def publish_content(self, content, media_id=None):
+    def publish_content(self, content, media_ids=None):
         """Publishes tweet with specified content and media."""
         try:
-            self.client.create_tweet(media_ids=[media_id], text=content)
+            self.client.create_tweet(media_ids=media_ids, text=content)
             logger.info(f"Published tweet: {content}")
         except Exception as e:
             logger.error(f"Error publishing tweet: {e}")

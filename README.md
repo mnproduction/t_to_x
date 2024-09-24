@@ -25,11 +25,12 @@ during first run pyrogram will create a new session
 
 
 # TODO:
-1. Work with multiple pictures in one post
-~~2. Change captions~~
+1. ~~Work with multiple pictures in one post~~
+2. ~~Change captions~~
 3. Handle videos
 4. Handle GIFs
 
+5. Refactor the code make it clean and consistent
 - Documentation
 - THIS
 - Tests
