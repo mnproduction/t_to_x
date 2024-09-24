@@ -26,7 +26,7 @@ during first run pyrogram will create a new session
 
 # TODO:
 1. Work with multiple pictures in one post
-2. Change captions
+~~2. Change captions~~
 3. Handle videos
 4. Handle GIFs
 
@@ -51,3 +51,4 @@ during first run pyrogram will create a new session
 - Updated telegram client to use it in project
 - Minor bugfixes
 - Pipeline telegram to x finished
+- Now captions are cleaned from links and posted to X
