@@ -17,9 +17,7 @@ class Config:
         required_vars = [
             "TELEGRAM_API_ID",
             "TELEGRAM_API_HASH",
-            "TELEGRAM_PHONE",
-            "TELEGRAM_USERNAME",
-            "TELEGRAM_GROUP_NAME",
+            "TELEGRAM_GROUP_ID",
         ]
         for var in required_vars:
             if getattr(self, var) is None:
