@@ -1,6 +1,7 @@
 import logging
 from settings.config import Config
 
+config = Config()
 
 class Logger:
     COLORS = {
@@ -12,7 +13,7 @@ class Logger:
         'RESET':    '\x1b[0m',              # reset colors
     }
 
-    def __init__(self, name, log_to_console=Config.DEBUG_STATE_CONSOLE, log_to_file=Config.DEBUG_STATE_FILE, file_name='logging.log'):
+    def __init__(self, name, log_to_console=config.DEBUG_STATE_CONSOLE, log_to_file=config.DEBUG_STATE_FILE, file_name='logging.log'):
         self.logger = logging.getLogger(name)
         self.logger.setLevel(logging.DEBUG)
         self.logger.propagate = False  # Disable sending messages to parent loggers
