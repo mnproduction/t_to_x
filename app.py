@@ -1,25 +1,25 @@
 # app.py
 
+import asyncio
 from apps.t.client import TelegramClient
-from apps.x.client import XClient
-from apps.t.handlers import create_photo_message_handler
+from apps.t.handlers import create_media_group_handler
 from settings.config import Config
 
 
-def main():
+async def main():
     config = Config()
     telegram_client = TelegramClient(config)
-    x_client = XClient(config)
 
+    
     # Create message handler, passing x_client
-    message_handler = create_photo_message_handler(telegram_client, x_client)
+    media_group_handler = create_media_group_handler(telegram_client)
 
     # Add handler to client
-    telegram_client.add_handler(message_handler)
+    telegram_client.add_handler(media_group_handler)
 
     # Run client
-    telegram_client.run()
+    await telegram_client.run()
 
 if __name__ == "__main__":
-    main()
+    asyncio.run(main())
 

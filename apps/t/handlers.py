@@ -1,36 +1,38 @@
 # apps/t/handlers.py
 
+from typing import List
 from pyrogram import Client, filters
 from pyrogram.types import Message
 from pyrogram.handlers import MessageHandler
 from apps.t.client import TelegramClient
-from apps.x.client import XClient
 from utils.logger import Logger
 
 logger = Logger(name='telegram-handler')
 
-def create_photo_message_handler(telegram_client: TelegramClient, x_client: XClient):
-    async def photo_message_handler(client: Client, message: Message):
-        from_channel = message.chat.title
-        from_channel_id = message.chat.id
+class MediaGroupHandler(MessageHandler):
+    def __init__(self, telegram_client: TelegramClient):
+        self.telegram_client = telegram_client
 
-        if message.photo:
-            try:
-                # Download image to memory
-                file_stream = await client.download_media(message, in_memory=True)
-                file_stream.seek(0)
-                logger.info(f"Received image from {from_channel}")
+    async def handle_media_group(self, client: Client, message: Message) -> None:
+        from_group_id = message.chat.id
 
-                # Post image to Twitter
-                media_id = x_client.media_upload_from_file(file_stream)
-                x_client.publish_content(content=f"New image from {from_channel}", media_id=media_id)
-                logger.info("Image has been posted to Twitter")
-            except Exception as e:
-                logger.error(f"Error processing image from {from_channel}: {e}")
-            finally:
-                file_stream.close()
-        else:
-            logger.warning(f"Message from {from_channel} ({from_channel_id}) does not contain an image")
+        messages: List[Message] = await client.get_media_group(chat_id=message.chat.id, message_id=message.id)
+        if message.id != messages[0].id:
+            # If not the first message, skip processing
+            return
+        logger.info(f"Received media group (ID: {message.media_group_id}) with {len(messages)} items from group: {message.chat.title} ({from_group_id})")
+        try:
+            await client.send_message(chat_id=from_group_id, text="+")
+            logger.info(f"Sent '+' to group with ID: {from_group_id}")
+        except Exception as e:
+            logger.error(f"Error sending '+' to group with ID {from_group_id}: {e}")
 
-    handler = MessageHandler(photo_message_handler, filters=filters.chat(telegram_client.channel_name) & filters.photo)
-    return handler
+
+
+def create_media_group_handler(telegram_client: TelegramClient) -> MessageHandler:
+    handler = MediaGroupHandler(telegram_client)
+    return MessageHandler(
+        handler.handle_media_group, 
+        filters=filters.chat(int(telegram_client.group_id)) & filters.media_group
+    )
+
