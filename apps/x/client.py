@@ -3,6 +3,7 @@ from io import BytesIO
 from typing import List
 from apps.interface import AbstractContentPublisher
 from tweepy import Client, API, OAuthHandler
+from tweepy.models import Media
 from settings.config import Config
 from pathlib import Path
 from utils.logger import Logger
@@ -29,20 +30,19 @@ class XClient(AbstractContentPublisher):
         ))
     
     def authenticate(self):
-        return super().authenticate()
+        pass
     
     def media_upload(self, file_path: Path):
-        self.media_id = self.api.media_upload(
-            filename=file_path
-            ).media_id_string
-        logger.debug(f"Uploaded media: {self.media_id}")
+        media: Media = self.api.media_upload(filename=file_path)
+        media_id = media.media_id_string
+        logger.debug(f"Uploaded media: {media_id}")
         
         return self.media_id
     
     def media_upload_from_file(self, file_stream: BytesIO):
         try:
             file_stream.seek(0)
-            media = self.api.media_upload(filename='image.jpg', file=file_stream)
+            media = self.api.media_upload(filename=file_stream.name, file=file_stream)
             self.media_id = media.media_id_string
             logger.debug(f"Uploaded media: {self.media_id}")
             return self.media_id
@@ -55,7 +55,7 @@ class XClient(AbstractContentPublisher):
             media_ids = []
             for file_stream in file_streams:
                 file_stream.seek(0)
-                media = self.api.media_upload(filename='image.jpg', file=file_stream)
+                media = self.api.media_upload(filename=file_stream.name, file=file_stream)
                 media_id = media.media_id_string
                 media_ids.append(media_id)
                 logger.debug(f"Uploaded media: {media_id}")

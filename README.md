@@ -25,10 +25,7 @@ during first run pyrogram will create a new session
 
 
 # TODO:
-1. Handle videos
-2. Handle GIFs
-
-3. Refactor the code make it clean and consistent
+1. Refactor the code make it clean and consistent
 
 - Documentation
 - THIS
@@ -55,3 +52,5 @@ during first run pyrogram will create a new session
 - Work with multiple pictures in one post
 - Change captions
 - Images is now grouped by 4
+- Handle videos
+- Handle GIFs

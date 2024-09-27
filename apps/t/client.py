@@ -2,6 +2,7 @@
 from apps.interface import AbstractMessageReceiver
 from pyrogram import Client
 from pyrogram.types import Message
+from pyrogram import idle
 from settings.config import Config
 from pathlib import Path
 from utils.logger import Logger
@@ -24,33 +25,12 @@ class TelegramClient(AbstractMessageReceiver):
         self.handlers.append(handler)
         self.client.add_handler(handler)
 
-    def run(self):
+    async def run(self):
+        await self.client.start()
         logger.info(f"Listening for messages in {self.channel_name}...")
-        self.client.run()
+        await idle()
+        await self.client.stop()
 
-    async def download_image(self, message: Message, save_dir: Path) -> Path:
-        """
-        Downloads image from message and saves it to specified directory.
-
-        Args:
-            message (Message): Pyrogram Message object containing image.
-            save_dir (Path): Path to directory where image should be saved.
-
-        Returns:
-            Path: Path to saved image.
-        """
-        try:
-            save_dir.mkdir(exist_ok=True)
-            photo = message.photo
-            file_name = f"{photo.file_unique_id}.jpg"
-            file_path = save_dir / file_name
-
-            await self.client.download_media(message, file_name=str(file_path))
-            logger.info(f"Image saved to {file_path}")
-            return file_path
-        except Exception as e:
-            logger.error(f"Error downloading image: {e}")
-            raise e
         
 
 
