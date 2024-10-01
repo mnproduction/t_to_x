@@ -1,10 +1,12 @@
 # apps/t/client.py
+import asyncio
+import socket
+
+from pyrogram import Client, idle
+from pyrogram.errors import RPCError
+
 from apps.interface import AbstractMessageReceiver
-from pyrogram import Client
-from pyrogram.types import Message
-from pyrogram import idle
 from settings.config import Config
-from pathlib import Path
 from utils.logger import Logger
 
 logger = Logger(name='t-client')
@@ -26,12 +28,37 @@ class TelegramClient(AbstractMessageReceiver):
         self.client.add_handler(handler)
 
     async def run(self):
-        await self.client.start()
-        logger.info(f"Listening for messages in {self.channel_name}...")
-        await idle()
-        await self.client.stop()
+        retry_delay = 1  # Начальная задержка в секундах
+        max_retry_delay = 60  # Максимальная задержка
 
-        
-
-
+        while True:
+            try:
+                logger.info("Trying to connect to Telegram...")
+                await self.client.start()
+                logger.info(f"Connected to {self.channel_name}. Listening for messages...")
+                
+                # Сбросить задержку после успешного подключения
+                retry_delay = 1
+                
+                # Ожидание до отключения
+                await idle()
+                
+            except (OSError, asyncio.TimeoutError, socket.gaierror) as e:
+                logger.error(f"Network error occurred: {e}. Reconnecting in {retry_delay} seconds...")
+                await self.client.stop()
+                await asyncio.sleep(retry_delay)
+                retry_delay = min(retry_delay * 2, max_retry_delay)  # Удваиваем задержку до максимума
+                continue  # Повторяем цикл для переподключения
+                
+            except RPCError as e:
+                logger.error(f"RPC error occurred: {e}. Reconnecting in {retry_delay} seconds...")
+                await self.client.stop()
+                await asyncio.sleep(retry_delay)
+                retry_delay = min(retry_delay * 2, max_retry_delay)
+                continue  # Повторяем цикл для переподключения
+                
+            except Exception as e:
+                logger.error(f"An unexpected error occurred: {e}. Exiting...")
+                await self.client.stop()
+                break
 
