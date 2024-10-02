@@ -117,6 +117,6 @@ def create_photo_message_handler(telegram_client: TelegramClient, x_client: XCli
 
     handler = MessageHandler(
             photo_message_handler, 
-            filters=filters.chat(telegram_client.channel_name) & (filters.photo | filters.media_group | filters.video | filters.animation)
+            filters=filters.chat(telegram_client.channel_id) & (filters.photo | filters.media_group | filters.video | filters.animation)
         )
     return handler
