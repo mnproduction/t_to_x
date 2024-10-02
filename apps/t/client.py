@@ -19,13 +19,16 @@ class TelegramClient(AbstractMessageReceiver):
             api_hash=config.TELEGRAM_API_HASH,
             phone_number=config.TELEGRAM_PHONE
             )
-        self.channel_name = config.TELEGRAM_CHANNEL_NAME
         self.channel_id = config.TELEGRAM_CHANNEL_ID
         self.handlers = []
 
     def add_handler(self, handler):
         self.handlers.append(handler)
         self.client.add_handler(handler)
+    
+    async def get_chat(self, channel_id):
+        chat = (await self.client.get_chat(channel_id))
+        return chat
 
     async def run(self):
         retry_delay = 1  # Начальная задержка в секундах
@@ -35,7 +38,8 @@ class TelegramClient(AbstractMessageReceiver):
             try:
                 logger.info("Trying to connect to Telegram...")
                 await self.client.start()
-                logger.info(f"Connected to {self.channel_name}. Listening for messages...")
+                channel_name = (await self.get_chat(self.channel_id)).title
+                logger.info(f"Connected to {channel_name}. Listening for messages...")
                 
                 # Сбросить задержку после успешного подключения
                 retry_delay = 1

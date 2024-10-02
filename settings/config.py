@@ -6,7 +6,6 @@ class Config:
         self.TELEGRAM_API_HASH = os.getenv("TELEGRAM_API_HASH")
         self.TELEGRAM_PHONE = os.getenv("TELEGRAM_PHONE")
         self.TELEGRAM_USERNAME = os.getenv("TELEGRAM_USERNAME")
-        self.TELEGRAM_CHANNEL_NAME = os.getenv("TELEGRAM_CHANNEL_NAME")
         self.TELEGRAM_CHANNEL_ID = os.getenv("TELEGRAM_CHANNEL_ID")
 
         self.X_API_KEY = os.getenv("X_API_KEY")

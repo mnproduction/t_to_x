@@ -111,12 +111,20 @@ def create_photo_message_handler(telegram_client: TelegramClient, x_client: XCli
                 logger.warning(f"Message from {from_channel} ({from_channel_id}) does not contain an image or media group.")
         except Exception as e:
             logger.error(f"Error processing image from {from_channel}: {e}")
-        
-        
-
 
     handler = MessageHandler(
             photo_message_handler, 
-            filters=filters.chat(telegram_client.channel_id) & (filters.photo | filters.media_group | filters.video | filters.animation)
+            filters=filters.chat(int(telegram_client.channel_id)) & (filters.photo | filters.media_group | filters.video | filters.animation)
         )
     return handler
+
+def create_debug_message_handler():
+    async def debug_message_handler(client: Client, message: Message):
+        logger.debug(f"Received message ID: {message.id} from chat ID: {message.chat.id}, title: {message.chat.title}")
+        logger.debug(f"Message content: {message.text or message.caption or 'No text content'}")
+
+    debug_handler = MessageHandler(
+        debug_message_handler,
+        filters.all
+    )
+    return debug_handler
