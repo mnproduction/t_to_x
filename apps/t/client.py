@@ -1,5 +1,5 @@
 # apps/t/client.py
-from core.interfaces import AbstractMessageReceiver
+import asyncio
 from pyrogram import Client
 from pyrogram import idle
 from settings.config import Config
@@ -7,7 +7,7 @@ from utils.logger import Logger
 
 logger = Logger(name='t-client')
 
-class TelegramClient(AbstractMessageReceiver):
+class TelegramClient:
     def __init__(self, config: Config):
         self.client: Client = Client(
             name=config.TELEGRAM_USERNAME, 
@@ -16,8 +16,11 @@ class TelegramClient(AbstractMessageReceiver):
             phone_number=config.TELEGRAM_PHONE,
         )
         self.group_id = config.TELEGRAM_GROUP_ID  # Use group ID from environment variables
+        self.handlers = []
+
 
     def add_handler(self, handler):
+        self.handlers.append(handler)
         self.client.add_handler(handler)
 
     async def run(self):
@@ -34,3 +37,7 @@ class TelegramClient(AbstractMessageReceiver):
             raise e  # Re-raise the exception to be caught in main
         finally:
             await self.client.stop()
+    
+    def publish_content(self, content):
+        
+        asyncio.create_task(self.client.send_message(chat_id=self.group_id, text=content))

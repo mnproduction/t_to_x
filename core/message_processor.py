@@ -1,7 +1,6 @@
 # core/message_processor.py
-from core.interfaces import AbstractMessageProcessor
 
-class MessageProcessor(AbstractMessageProcessor):
+class MessageProcessor:
     def extract_image(self, message):
         if message.photo:
             file_path = message.download()

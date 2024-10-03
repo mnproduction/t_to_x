@@ -1,17 +1,16 @@
 # apps/t/handlers.py
-
 from typing import List
 from pyrogram import Client, filters
 from pyrogram.types import Message
-from pyrogram.handlers import MessageHandler
 from apps.t.client import TelegramClient
+from core.manager import AppManager
 from utils.logger import Logger
 
 logger = Logger(name='telegram-handler')
 
-class MediaGroupHandler(MessageHandler):
-    def __init__(self, telegram_client: TelegramClient):
-        self.telegram_client = telegram_client
+class MediaGroupHandler:
+    def __init__(self, app_manager: AppManager):
+        self.app_manager = app_manager
 
     async def handle_media_group(self, client: Client, message: Message) -> None:
         from_group_id = message.chat.id
@@ -22,17 +21,14 @@ class MediaGroupHandler(MessageHandler):
             return
         logger.info(f"Received media group (ID: {message.media_group_id}) with {len(messages)} items from group: {message.chat.title} ({from_group_id})")
         try:
-            await client.send_message(chat_id=from_group_id, text="+")
-            logger.info(f"Sent '+' to group with ID: {from_group_id}")
+            self.app_manager.process_message(message)
+            logger.info(f"Processed message and sent '+' to group with ID: {from_group_id}")
         except Exception as e:
-            logger.error(f"Error sending '+' to group with ID {from_group_id}: {e}")
+            logger.error(f"Error processing message for group with ID {from_group_id}: {e}")
 
 
 
-def create_media_group_handler(telegram_client: TelegramClient) -> MessageHandler:
-    handler = MediaGroupHandler(telegram_client)
-    return MessageHandler(
-        handler.handle_media_group, 
-        filters=filters.chat(int(telegram_client.group_id)) & filters.media_group
-    )
+def create_media_group_handler(app_manager: AppManager):
+    handler = MediaGroupHandler(app_manager)
+    return handlers.MessageHandler(handler.handle_media_group, filters.media_group)
 

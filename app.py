@@ -1,7 +1,5 @@
-# app.py
 import asyncio
 import sys
-import time
 
 from apps.t.client import TelegramClient
 from apps.t.handlers import create_media_group_handler
@@ -16,9 +14,9 @@ async def main():
     config = Config()
     telegram_client = TelegramClient(config)
 
-    # Initialize processors and publishers as needed
+    # Инициализируйте обработчик сообщений и публикуйте контент
     message_processor = MessageProcessor()
-    content_publisher = telegram_client  # Assuming TelegramClient handles publishing
+    content_publisher = telegram_client  # Предполагается, что TelegramClient обрабатывает публикацию
 
     app_manager = AppManager(
         message_receiver=telegram_client,
@@ -27,12 +25,15 @@ async def main():
         config=config
     )
 
-    # Create and add handler
-    media_group_handler = create_media_group_handler(telegram_client)
+    # Запустите AppManager, который добавит необходимые обработчики
+    app_manager.run()
+
+    # Создайте и добавьте обработчик через AppManager
+    media_group_handler = create_media_group_handler(app_manager)
     telegram_client.add_handler(media_group_handler)
 
     max_retries = 5
-    retry_delay = 5  # Start with 5 seconds
+    retry_delay = 5  # Начальная задержка 5 секунд
 
     for attempt in range(1, max_retries + 1):
         try:
@@ -43,7 +44,7 @@ async def main():
             if attempt < max_retries:
                 logger.info(f"Retrying in {retry_delay} seconds... (Attempt {attempt}/{max_retries})")
                 await asyncio.sleep(retry_delay)
-                retry_delay *= 2  # Exponential backoff
+                retry_delay *= 2  # Экспоненциальный рост задержки
             else:
                 logger.critical("Max retries reached. Exiting application.")
                 sys.exit(1)
@@ -55,4 +56,3 @@ if __name__ == "__main__":
         asyncio.run(main())
     except KeyboardInterrupt:
         logger.info("Application shutdown requested by user.")
-        

@@ -1,26 +1,24 @@
 # core/manager.py
-from datetime import datetime, timedelta, timezone
+from datetime import timedelta, timezone, datetime
 
-from core.interfaces import AbstractMessageReceiver, AbstractContentPublisher, AbstractManager
 from core.message_processor import MessageProcessor
+from apps.t.client import TelegramClient
 from settings.config import Config
-
 from utils.logger import Logger
 
 logger = Logger(name='manager')
 
-class AppManager(AbstractManager):
-    def __init__(self, message_receiver: AbstractMessageReceiver, content_publisher: AbstractContentPublisher, message_processor: MessageProcessor, config: Config):
-        self.message_receiver: AbstractMessageReceiver = message_receiver
-        self.content_publisher: AbstractContentPublisher = content_publisher
-        self.message_processor: MessageProcessor = message_processor
+class AppManager:
+    def __init__(self, message_receiver: TelegramClient, content_publisher: TelegramClient, message_processor: MessageProcessor, config: Config):
+        self.message_receiver = message_receiver
+        self.content_publisher = content_publisher
+        self.message_processor = message_processor
         self.config = config
         self.last_sent_time = None
         self.cooldown_period = timedelta(seconds=self.config.COOLDOWN_PERIOD)
 
     def run(self):
         self.message_receiver.add_handler(self.process_message)
-
 
     def process_message(self, message):
         current_time = datetime.now(timezone.utc)
