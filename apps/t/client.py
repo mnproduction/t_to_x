@@ -1,5 +1,5 @@
 # apps/t/client.py
-from apps.interface import AbstractMessageReceiver
+from core.interfaces import AbstractMessageReceiver
 from pyrogram import Client
 from pyrogram import idle
 from settings.config import Config
