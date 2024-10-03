@@ -21,14 +21,16 @@ class TelegramClient(AbstractMessageReceiver):
         self.client.add_handler(handler)
 
     async def run(self):
-        await self.client.start()
-        if not self.group_id:
-            raise ValueError("TELEGRAM_GROUP_ID is not set in environment variables.")
-        logger.info(f"Target group ID: {self.group_id}")
-        logger.info(f"Listening for messages in group with ID {self.group_id}...")
-        # Keep the client in active state
-        await idle()
-
-        # Stop the client when done
-        await self.client.stop()
-
+        try:
+            await self.client.start()
+            if not self.group_id:
+                raise ValueError("TELEGRAM_GROUP_ID is not set in environment variables.")
+            logger.info(f"Target group ID: {self.group_id}")
+            logger.info(f"Listening for messages in group with ID {self.group_id}...")
+            # Keep the client in active state
+            await idle()
+        except Exception as e:
+            logger.error(f"Telegram client encountered an error: {e}")
+            raise e  # Re-raise the exception to be caught in main
+        finally:
+            await self.client.stop()
