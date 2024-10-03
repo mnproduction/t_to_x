@@ -23,7 +23,8 @@ async def main():
     app_manager = AppManager(
         message_receiver=telegram_client,
         content_publisher=content_publisher,
-        message_processor=message_processor
+        message_processor=message_processor,
+        config=config
     )
 
     # Create and add handler
@@ -54,3 +55,4 @@ if __name__ == "__main__":
         asyncio.run(main())
     except KeyboardInterrupt:
         logger.info("Application shutdown requested by user.")
+        
