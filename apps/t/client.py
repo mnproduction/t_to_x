@@ -1,5 +1,5 @@
 # apps/t/client.py
-from apps.interface import AbstractMessageReceiver
+
 from pyrogram import Client
 from pyrogram import idle
 from settings.config import Config
@@ -7,7 +7,7 @@ from utils.logger import Logger
 
 logger = Logger(name='t-client')
 
-class TelegramClient(AbstractMessageReceiver):
+class TelegramClient():
     def __init__(self, config: Config):
         self.client: Client = Client(
             name=config.TELEGRAM_USERNAME, 
